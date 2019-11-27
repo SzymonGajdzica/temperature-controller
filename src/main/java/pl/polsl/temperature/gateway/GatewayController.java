@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.polsl.temperature.exception.NotFoundException;
 import pl.polsl.temperature.token.TokenRepository;
-import pl.polsl.temperature.user.User;
 
 import java.util.Optional;
 
@@ -18,10 +17,10 @@ public class GatewayController {
     private final TokenRepository tokenRepository;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public GatewayView addGateway(@RequestBody Gateway gateway, @RequestHeader("Authorization") String tokenHeader) {
-        gateway.checkPostModel();
-        User user = tokenRepository.getAndValidateUserFromHeader(tokenHeader, gateway.getUser().getId());
-        gateway.setUser(user);
+    public GatewayView addGateway(@RequestBody GatewayPost gatewayPost, @RequestHeader("Authorization") String tokenHeader) {
+        Gateway gateway = new Gateway();
+        gateway.setName(gatewayPost.getName());
+        gateway.setUser(tokenRepository.getAndValidateUserFromHeader(tokenHeader, gatewayPost.getUserId()));
         return new GatewayView(gatewayRepository.save(gateway));
     }
 

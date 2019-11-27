@@ -2,10 +2,8 @@ package pl.polsl.temperature.user;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pl.polsl.temperature.base.BaseModel;
-import pl.polsl.temperature.exception.WrongBodyException;
 import pl.polsl.temperature.gateway.Gateway;
 import pl.polsl.temperature.measurement.type.MeasurementType;
 import pl.polsl.temperature.role.Role;
@@ -21,7 +19,6 @@ import static javax.persistence.CascadeType.ALL;
 @Table(name = "\"user\"")
 @ToString
 @Data
-@NoArgsConstructor
 public class User extends BaseModel {
 
     @Column(name = "name", nullable = false)
@@ -47,24 +44,5 @@ public class User extends BaseModel {
 
     @OneToMany(cascade = ALL, mappedBy = "ownerUser")
     private List<MeasurementType> measurementTypes;
-
-    @Override
-    public void checkPostModel() throws WrongBodyException {
-        if (password == null || password.isEmpty() ||
-                username == null || username.isEmpty() ||
-                email == null || name == null || surname == null)
-            throw new WrongBodyException("user:password (not empty) && username:password (not empty) && user:email && user:name && user:surname");
-        id = null;
-    }
-
-    public User merge(User user) {
-        if(user.getName() != null)
-            name = user.getName();
-        if(user.getSurname() != null)
-            surname = user.getSurname();
-        if(user.getEmail() != null)
-           email = user.getEmail();
-        return this;
-    }
 
 }

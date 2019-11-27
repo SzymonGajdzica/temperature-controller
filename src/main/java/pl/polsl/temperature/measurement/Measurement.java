@@ -3,7 +3,6 @@ package pl.polsl.temperature.measurement;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import pl.polsl.temperature.base.BaseModel;
-import pl.polsl.temperature.exception.WrongBodyException;
 import pl.polsl.temperature.measurement.type.MeasurementType;
 import pl.polsl.temperature.station.Station;
 
@@ -32,9 +31,4 @@ public class Measurement extends BaseModel {
     @ManyToOne()
     @JoinColumn(name = "station_id", nullable = false)
     private Station station;
-
-    @Override
-    public void checkPostModel() throws WrongBodyException {
-
-    }
 }

@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 @Component
 @AllArgsConstructor
-public class JwtTokenUtils {
+public class AuthenticationUtils {
 
     private static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60; // 5h
     private static final String secret = "halorozwoj";

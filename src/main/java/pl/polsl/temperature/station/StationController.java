@@ -46,12 +46,13 @@ public class StationController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public StationView addStation(@RequestBody Station station, @RequestHeader("Authorization") String tokenHeader) {
-        station.checkPostModel();
-        Optional<Gateway> gateway = gatewayRepository.findById(station.getGateway().getId());
+    public StationView addStation(@RequestBody StationPost stationPost, @RequestHeader("Authorization") String tokenHeader) {
+        Station station = new Station();
+        Optional<Gateway> gateway = gatewayRepository.findById(stationPost.getGatewayId());
         if(!gateway.isPresent())
-            throw new NotFoundException(station.getGateway().getId());
+            throw new NotFoundException(stationPost.getGatewayId());
         tokenRepository.validateUserWithHeader(tokenHeader, gateway.get().getUser());
+        station.setName(stationPost.getName());
         station.setGateway(gateway.get());
         return new StationView(stationRepository.save(station));
     }

@@ -31,13 +31,6 @@ public class ExceptionAdvice {
         return generateBasicMessage(e);
     }
 
-    @ResponseBody
-    @ExceptionHandler(WrongBodyException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Message wrongBodyHandler(WrongBodyException e) {
-        return generateBasicMessage(e);
-    }
-
     private Message generateBasicMessage(Exception e){
         return new Message(e.getClass().getSimpleName(), e.getMessage());
     }

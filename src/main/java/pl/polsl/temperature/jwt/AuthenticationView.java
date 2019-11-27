@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @AllArgsConstructor
-public class JwtResponse {
+public class AuthenticationView {
 
     @Getter(AccessLevel.PUBLIC)
     private final String token;

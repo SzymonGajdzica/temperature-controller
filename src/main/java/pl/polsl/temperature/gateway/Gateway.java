@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import pl.polsl.temperature.base.BaseModel;
-import pl.polsl.temperature.exception.WrongBodyException;
 import pl.polsl.temperature.station.Station;
 import pl.polsl.temperature.user.User;
 
@@ -30,10 +29,4 @@ public class Gateway extends BaseModel {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Override
-    public void checkPostModel() throws WrongBodyException {
-        if (name == null || user == null || user.getId() == null)
-            throw new WrongBodyException("gateway::id && user:id");
-        id = null;
-    }
 }

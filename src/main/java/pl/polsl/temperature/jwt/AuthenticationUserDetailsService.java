@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 @AllArgsConstructor
 @Service
-public class JwtUserDetailsService implements UserDetailsService {
+public class AuthenticationUserDetailsService implements UserDetailsService {
 
 	private final UserRepository userRepository;
 

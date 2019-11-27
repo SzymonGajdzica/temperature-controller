@@ -18,21 +18,21 @@ import java.io.IOException;
 
 @AllArgsConstructor
 @Component
-public class JwtRequestFilter extends OncePerRequestFilter {
+public class AuthenticationRequestFilter extends OncePerRequestFilter {
 
-    private final JwtUserDetailsService jwtUserDetailsService;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final AuthenticationUserDetailsService authenticationUserDetailsService;
+    private final AuthenticationUtils authenticationUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             final String requestTokenHeader = request.getHeader("Authorization");
             System.out.println(request.getQueryString());
-            String jwtToken = jwtTokenUtils.getTokenFromHeader(requestTokenHeader);
-            String username = jwtTokenUtils.getUsernameFromToken(jwtToken);
+            String jwtToken = authenticationUtils.getTokenFromHeader(requestTokenHeader);
+            String username = authenticationUtils.getUsernameFromToken(jwtToken);
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
-                if (jwtTokenUtils.validateToken(jwtToken, userDetails)) {
+                UserDetails userDetails = authenticationUserDetailsService.loadUserByUsername(username);
+                if (authenticationUtils.validateToken(jwtToken, userDetails)) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

@@ -6,7 +6,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Component;
 import pl.polsl.temperature.exception.NotAuthorizedActionException;
 import pl.polsl.temperature.exception.NotFoundException;
-import pl.polsl.temperature.jwt.JwtTokenUtils;
+import pl.polsl.temperature.jwt.AuthenticationUtils;
 import pl.polsl.temperature.user.User;
 import pl.polsl.temperature.user.UserRepository;
 
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class TokenRepositoryImpl implements TokenRepository {
 
     private final UserRepository userRepository;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final AuthenticationUtils authenticationUtils;
 
     @Override
     public @NonNull User getUserFromHeader(String tokenHeader) throws NotAuthorizedActionException {
@@ -48,8 +48,8 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     private String getUsernameFromHeader(String tokenHeader) throws NotAuthorizedActionException {
         try {
-            String token = jwtTokenUtils.getTokenFromHeader(tokenHeader);
-            return jwtTokenUtils.getClaimFromToken(token, Claims::getSubject);
+            String token = authenticationUtils.getTokenFromHeader(tokenHeader);
+            return authenticationUtils.getClaimFromToken(token, Claims::getSubject);
         }catch (Exception e){
             throw new NotAuthorizedActionException("unknown error");
         }

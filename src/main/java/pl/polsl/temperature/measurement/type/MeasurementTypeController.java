@@ -26,10 +26,10 @@ public class MeasurementTypeController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public MeasurementTypeView addMeasurementType(@RequestBody MeasurementType measurementType, @RequestHeader("Authorization") String tokenHeader) {
-        measurementType.checkPostModel();
-        User user = tokenRepository.getAndValidateUserFromHeader(tokenHeader, measurementType.getOwnerUser().getId());
-        measurementType.setOwnerUser(user);
+    public MeasurementTypeView addMeasurementType(@RequestBody MeasurementTypePost measurementTypePost, @RequestHeader("Authorization") String tokenHeader) {
+        MeasurementType measurementType = new MeasurementType();
+        measurementType.setName(measurementTypePost.getName());
+        measurementType.setOwnerUser(tokenRepository.getAndValidateUserFromHeader(tokenHeader, measurementTypePost.getUserId()));
         return new MeasurementTypeView(measurementTypeRepository.save(measurementType));
     }
 

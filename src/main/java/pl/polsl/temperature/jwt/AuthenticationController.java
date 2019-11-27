@@ -10,26 +10,30 @@ import org.springframework.web.bind.annotation.*;
 import pl.polsl.temperature.base.Message;
 import pl.polsl.temperature.exception.NotAuthorizedActionException;
 import pl.polsl.temperature.exception.UsernameAlreadyUsedException;
-import pl.polsl.temperature.exception.WrongBodyException;
 import pl.polsl.temperature.user.User;
+import pl.polsl.temperature.user.UserPost;
 import pl.polsl.temperature.user.UserRepository;
 
 @AllArgsConstructor
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/authenticate")
-public class JwtAuthenticationController {
+public class AuthenticationController {
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtils tokenUtils;
-    private final JwtUserDetailsService userDetailsService;
+    private final AuthenticationUtils tokenUtils;
+    private final AuthenticationUserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Message registerUser(@RequestBody User user) {
-        user.checkPostModel();
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+    public Message registerUser(@RequestBody UserPost userPost) {
+        User user = new User();
+        user.setUsername(userPost.getUsername());
+        user.setPassword(bCryptPasswordEncoder.encode(userPost.getPassword()));
+        user.setEmail(userPost.getEmail());
+        user.setSurname(userPost.getSurname());
+        user.setName(userPost.getName());
         if(userRepository.findByUsername(user.getUsername()).isPresent())
             throw new UsernameAlreadyUsedException(user.getUsername());
         userRepository.save(user);
@@ -37,14 +41,12 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public JwtResponse createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) {
-        if(authenticationRequest.getUsername() == null || authenticationRequest.getPassword() == null)
-            throw new WrongBodyException("user:password && username:password");
+    public AuthenticationView createAuthenticationToken(@RequestBody AuthenticationPost authenticationPost) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-            UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationPost.getUsername(), authenticationPost.getPassword()));
+            UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationPost.getUsername());
             String token = tokenUtils.generateToken(userDetails);
-            return new JwtResponse(token, tokenUtils.getExpirationDateFromToken(token));
+            return new AuthenticationView(token, tokenUtils.getExpirationDateFromToken(token));
         }  catch (Exception e){
             throw new NotAuthorizedActionException("wrong credentials");
         }

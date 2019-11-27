@@ -36,9 +36,15 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateUser(@PathVariable Long id, @RequestBody User user, @RequestHeader("Authorization") String tokenHeader) {
-        User existingUser = tokenRepository.getAndValidateUserFromHeader(tokenHeader, id);
-        userRepository.save(existingUser.merge(user));
+    public void updateUser(@PathVariable Long id, @RequestBody UserPatch userPatch, @RequestHeader("Authorization") String tokenHeader) {
+        User user = tokenRepository.getAndValidateUserFromHeader(tokenHeader, id);
+        if(userPatch.getName() != null)
+            user.setName(userPatch.getName());
+        if(userPatch.getSurname() != null)
+            user.setSurname(userPatch.getSurname());
+        if(userPatch.getEmail() != null)
+            user.setEmail(userPatch.getEmail());
+        userRepository.save(user);
     }
 
 }

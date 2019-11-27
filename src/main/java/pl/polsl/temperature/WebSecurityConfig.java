@@ -14,8 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pl.polsl.temperature.jwt.JwtAuthenticationEntryPoint;
-import pl.polsl.temperature.jwt.JwtRequestFilter;
+import pl.polsl.temperature.jwt.AuthenticationMEntryPoint;
+import pl.polsl.temperature.jwt.AuthenticationRequestFilter;
 
 @AllArgsConstructor
 @Configuration
@@ -23,10 +23,23 @@ import pl.polsl.temperature.jwt.JwtRequestFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final AuthenticationMEntryPoint AuthenticationMEntryPoint;
     private final UserDetailsService jwtUserDetailsService;
-    private final JwtRequestFilter jwtRequestFilter;
+    private final AuthenticationRequestFilter authenticationRequestFilter;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private static final String[] AUTH_WHITELIST = {
+            // app whitelist
+            "/authenticate/**",
+            // -- swagger ui
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**"
+    };
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -42,10 +55,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
-                .authorizeRequests().antMatchers("/authenticate/**").permitAll().
+                .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll().
         anyRequest().authenticated().and().
-        exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+        exceptionHandling().authenticationEntryPoint(AuthenticationMEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(authenticationRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

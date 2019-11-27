@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import pl.polsl.temperature.base.BaseModel;
-import pl.polsl.temperature.exception.WrongBodyException;
 import pl.polsl.temperature.measurement.Measurement;
 import pl.polsl.temperature.user.User;
 
@@ -29,11 +28,4 @@ public class MeasurementType extends BaseModel {
     @ManyToOne()
     @JoinColumn(name = "owner_user_id", nullable = false)
     private User ownerUser;
-
-    @Override
-    public void checkPostModel() throws WrongBodyException {
-        if(name == null || ownerUser == null || ownerUser.getId() == null)
-            throw new WrongBodyException("measurementType:id && measurementType:ownerUser:id");
-        id = null;
-    }
 }

@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import pl.polsl.temperature.base.BaseModel;
-import pl.polsl.temperature.exception.WrongBodyException;
 import pl.polsl.temperature.user.User;
 
 import javax.persistence.Column;
@@ -26,10 +25,4 @@ public class Role extends BaseModel {
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
-    @Override
-    public void checkPostModel() throws WrongBodyException {
-        if(name == null)
-            throw new WrongBodyException("measurementType:id");
-        id = null;
-    }
 }
