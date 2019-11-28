@@ -1,5 +1,6 @@
 package pl.polsl.temperature.station;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.polsl.temperature.measurement.MeasurementView;
@@ -12,8 +13,11 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class StationView {
 
+    @ApiModelProperty(required = true, example = "0")
     private Long id;
+    @ApiModelProperty(required = true, example = "Josh temperature station")
     private String name;
+    @ApiModelProperty(required = true)
     private List<MeasurementView> measurements;
 
     public StationView(Station station){

@@ -1,8 +1,10 @@
 package pl.polsl.temperature.station;
 
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import pl.polsl.temperature.exception.NotFoundException;
 import pl.polsl.temperature.gateway.Gateway;
 import pl.polsl.temperature.gateway.GatewayRepository;
@@ -10,6 +12,7 @@ import pl.polsl.temperature.token.TokenRepository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
@@ -27,20 +30,17 @@ public class StationController {
     @GetMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public StationView getSingleStation(@PathVariable Long id,
                                         @RequestHeader("Authorization") String tokenHeader,
-                                        @RequestParam String startDate,
-                                        @RequestParam String endDate) throws ParseException {
+                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam ZonedDateTime startDate,
+                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam ZonedDateTime endDate) {
         Optional<Station> station = stationRepository.findById(id);
         if(!station.isPresent())
             throw new NotFoundException(id);
         tokenRepository.validateUserWithHeader(tokenHeader, station.get().getGateway().getUser());
         Station newStation = station.get();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.ENGLISH);
-        Date startDateConverted = sdf.parse(startDate.replace(" ", "+"));
-        Date endDateConverted = sdf.parse(endDate.replace(" ", "+"));
         newStation.setMeasurements(newStation.getMeasurements()
                 .stream()
-                .filter(measurement -> measurement.getDate().before(endDateConverted))
-                .filter(measurement -> measurement.getDate().after(startDateConverted))
+                .filter(measurement -> measurement.getDate().before(Date.from(endDate.toInstant())))
+                .filter(measurement -> measurement.getDate().after(Date.from(startDate.toInstant())))
                 .collect(Collectors.toList()));
         return new StationView(newStation);
     }

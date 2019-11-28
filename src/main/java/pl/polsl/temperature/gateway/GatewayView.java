@@ -1,7 +1,9 @@
 package pl.polsl.temperature.gateway;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 import pl.polsl.temperature.station.StationReducedView;
 
 import java.util.ArrayList;
@@ -12,7 +14,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class GatewayView {
 
+    @ApiModelProperty(required = true, example = "0")
     private Long id;
+    @ApiModelProperty(required = true, example = "Main gateway")
     private String name;
     private List<StationReducedView> stations;
 

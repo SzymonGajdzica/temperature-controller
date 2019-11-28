@@ -18,7 +18,7 @@ public class UserController {
     private final TokenRepository tokenRepository;
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserView> getAllUsers(@RequestHeader("Authorization") String tokenHeader) {
+    public List<UserView> getUsers(@RequestHeader("Authorization") String tokenHeader) {
         User user = tokenRepository.getUserFromHeader(tokenHeader);
         if(user.getRoles().stream().noneMatch(role -> role.getName().equals("admin")))
             throw new NotAuthorizedActionException("this action requires admin privileges");
@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/current", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserView getSingleUser(@RequestHeader("Authorization") String tokenHeader) {
+    public UserView getUser(@RequestHeader("Authorization") String tokenHeader) {
         return new UserView(tokenRepository.getUserFromHeader(tokenHeader));
     }
 
