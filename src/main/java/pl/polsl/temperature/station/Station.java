@@ -9,6 +9,7 @@ import pl.polsl.temperature.measurement.Measurement;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -28,5 +29,9 @@ public class Station extends BaseModel {
     @ManyToOne()
     @JoinColumn(name = "gateway_id", nullable = false)
     private Gateway gateway;
+
+    @Column(name = "secret_id", nullable = false)
+    private UUID secretId = UUID.randomUUID();
+
 
 }

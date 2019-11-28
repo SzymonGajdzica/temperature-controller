@@ -22,21 +22,16 @@ public class TokenRepositoryImpl implements TokenRepository {
     @Override
     public @NonNull User getUserFromHeader(String tokenHeader) throws NotAuthorizedActionException {
         String userName = getUsernameFromHeader(tokenHeader);
-        Optional<User> user = userRepository.findByUsername(userName);
-        if(!user.isPresent())
-            throw new NotAuthorizedActionException("token does not match any user");
-        return user.get();
+        return userRepository.findByUsername(userName).orElseThrow(() -> new NotAuthorizedActionException("token does not match any user"));
     }
 
     @Override
     public @NonNull User getAndValidateUserFromHeader(String tokenHeader, Long userId) throws NotAuthorizedActionException, NotFoundException {
         String userName = getUsernameFromHeader(tokenHeader);
-        Optional<User> user = userRepository.findById(userId);
-        if(!user.isPresent())
-            throw new NotFoundException(userId);
-        if(!userName.equals(user.get().getUsername()))
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
+        if(!userName.equals(user.getUsername()))
             throw new NotAuthorizedActionException("cannot perform actions on not your own data");
-        return user.get();
+        return user;
     }
 
     @Override

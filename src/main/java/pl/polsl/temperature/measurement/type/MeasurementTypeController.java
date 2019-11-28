@@ -35,11 +35,9 @@ public class MeasurementTypeController {
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteMeasurementType(@PathVariable Long id, @RequestHeader("Authorization") String tokenHeader) {
-        Optional<MeasurementType> measurementType = measurementTypeRepository.findById(id);
-        if (!measurementType.isPresent())
-            throw new NotFoundException(id);
-        tokenRepository.validateUserWithHeader(tokenHeader, measurementType.get().getOwnerUser());
-        measurementTypeRepository.delete(measurementType.get());
+        MeasurementType measurementType = measurementTypeRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
+        tokenRepository.validateUserWithHeader(tokenHeader, measurementType.getOwnerUser());
+        measurementTypeRepository.delete(measurementType);
     }
 
 }

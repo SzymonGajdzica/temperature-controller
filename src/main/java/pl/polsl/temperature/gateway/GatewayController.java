@@ -26,11 +26,9 @@ public class GatewayController {
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public void deleteGateway(@PathVariable Long id, @RequestHeader("Authorization") String tokenHeader) {
-        Optional<Gateway> gateway = gatewayRepository.findById(id);
-        if (!gateway.isPresent())
-            throw new NotFoundException(id);
-        tokenRepository.validateUserWithHeader(tokenHeader, gateway.get().getUser());
-        gatewayRepository.delete(gateway.get());
+        Gateway gateway = gatewayRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
+        tokenRepository.validateUserWithHeader(tokenHeader, gateway.getUser());
+        gatewayRepository.delete(gateway);
     }
 
 }
