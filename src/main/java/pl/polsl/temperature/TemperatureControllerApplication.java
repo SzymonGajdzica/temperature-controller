@@ -15,13 +15,13 @@ import java.util.List;
 @SpringBootApplication
 public class TemperatureControllerApplication {
 
+    public static void main(String[] args) {
+        SpringApplication.run(TemperatureControllerApplication.class, args);
+    }
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(TemperatureControllerApplication.class, args);
     }
 
 }

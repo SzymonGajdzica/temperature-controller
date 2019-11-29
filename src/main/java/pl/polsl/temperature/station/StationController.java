@@ -10,6 +10,7 @@ import pl.polsl.temperature.exception.NotFoundException;
 import pl.polsl.temperature.gateway.Gateway;
 import pl.polsl.temperature.gateway.GatewayRepository;
 import pl.polsl.temperature.token.TokenRepository;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/stations")
+@RequestMapping(value = "/stations")
 @AllArgsConstructor
 public class StationController {
 
@@ -28,9 +29,9 @@ public class StationController {
     private final GatewayRepository gatewayRepository;
     private final TokenRepository tokenRepository;
 
-    @GetMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public StationView getStation(@PathVariable Long id,
-                                  @RequestHeader(value = "Authorization", required = false) String tokenHeader,
+                                  @ApiIgnore @RequestHeader(value = "Authorization") String tokenHeader,
                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam ZonedDateTime startDate,
                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam ZonedDateTime endDate) {
         Station station = stationRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
@@ -44,7 +45,7 @@ public class StationController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public StationView addStation(@RequestBody StationPost stationPost, @RequestHeader(value = "Authorization", required = false) String tokenHeader) {
+    public StationView addStation(@RequestBody StationPost stationPost, @ApiIgnore @RequestHeader(value = "Authorization") String tokenHeader) {
         Station station = new Station();
         Gateway gateway = gatewayRepository.findById(stationPost.getGatewayId()).orElseThrow(() -> new NotFoundException(stationPost.getGatewayId()));
         tokenRepository.validateUserWithHeader(tokenHeader, gateway.getUser());
@@ -53,11 +54,12 @@ public class StationController {
         return new StationView(stationRepository.save(station));
     }
 
-    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteStation(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String tokenHeader) {
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Message deleteStation(@PathVariable Long id, @ApiIgnore @RequestHeader(value = "Authorization") String tokenHeader) {
         Station station = stationRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
         tokenRepository.validateUserWithHeader(tokenHeader, station.getGateway().getUser());
         stationRepository.delete(station);
+        return new Message("Success", "Station deleted");
     }
 
 }

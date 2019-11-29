@@ -16,8 +16,7 @@ import pl.polsl.temperature.user.UserRepository;
 
 @AllArgsConstructor
 @RestController
-@CrossOrigin
-@RequestMapping(value = "/authenticate")
+@RequestMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
 
     private final UserRepository userRepository;

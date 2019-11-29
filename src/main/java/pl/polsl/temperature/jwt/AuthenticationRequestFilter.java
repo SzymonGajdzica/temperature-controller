@@ -27,7 +27,6 @@ public class AuthenticationRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             final String requestTokenHeader = request.getHeader("Authorization");
-            System.out.println(request.getQueryString());
             String jwtToken = authenticationUtils.getTokenFromHeader(requestTokenHeader);
             String username = authenticationUtils.getUsernameFromToken(jwtToken);
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -38,14 +37,8 @@ public class AuthenticationRequestFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
             }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Unable to get JWT Token");
-        } catch (ExpiredJwtException e) {
-            System.out.println("JWT Token has expired");
-        } catch (NullPointerException e) {
-            System.out.println("NullPointer during filtering");
-        } catch (MalformedJwtException e){
-            System.out.println("Malformed jwt exception");
+        } catch (Exception e) {
+            System.out.println("Token filter exception = " + e.getClass().getName() + " - " + e.getMessage());
         }
         chain.doFilter(request, response);
     }
