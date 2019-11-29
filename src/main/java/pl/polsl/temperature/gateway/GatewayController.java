@@ -17,7 +17,7 @@ public class GatewayController {
     private final TokenRepository tokenRepository;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public GatewayView addGateway(@RequestBody GatewayPost gatewayPost, @RequestHeader("Authorization") String tokenHeader) {
+    public GatewayView addGateway(@RequestBody GatewayPost gatewayPost, @RequestHeader(value = "Authorization", required = false) String tokenHeader) {
         Gateway gateway = new Gateway();
         gateway.setName(gatewayPost.getName());
         gateway.setUser(tokenRepository.getAndValidateUserFromHeader(tokenHeader, gatewayPost.getUserId()));
@@ -25,7 +25,7 @@ public class GatewayController {
     }
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteGateway(@PathVariable Long id, @RequestHeader("Authorization") String tokenHeader) {
+    public void deleteGateway(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String tokenHeader) {
         Gateway gateway = gatewayRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
         tokenRepository.validateUserWithHeader(tokenHeader, gateway.getUser());
         gatewayRepository.delete(gateway);

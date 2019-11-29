@@ -20,13 +20,13 @@ public class MeasurementTypeController {
     private final TokenRepository tokenRepository;
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MeasurementTypeView> getAllMeasurementTypes(@RequestHeader("Authorization") String tokenHeader) {
+    public List<MeasurementTypeView> getAllMeasurementTypes(@RequestHeader(value = "Authorization", required = false) String tokenHeader) {
         User user = tokenRepository.getUserFromHeader(tokenHeader);
         return measurementTypeRepository.findAllByOwnerUser(user).stream().map(MeasurementTypeView::new).collect(Collectors.toList());
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public MeasurementTypeView addMeasurementType(@RequestBody MeasurementTypePost measurementTypePost, @RequestHeader("Authorization") String tokenHeader) {
+    public MeasurementTypeView addMeasurementType(@RequestBody MeasurementTypePost measurementTypePost, @RequestHeader(value = "Authorization", required = false) String tokenHeader) {
         MeasurementType measurementType = new MeasurementType();
         measurementType.setName(measurementTypePost.getName());
         measurementType.setOwnerUser(tokenRepository.getAndValidateUserFromHeader(tokenHeader, measurementTypePost.getUserId()));
@@ -34,7 +34,7 @@ public class MeasurementTypeController {
     }
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteMeasurementType(@PathVariable Long id, @RequestHeader("Authorization") String tokenHeader) {
+    public void deleteMeasurementType(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String tokenHeader) {
         MeasurementType measurementType = measurementTypeRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
         tokenRepository.validateUserWithHeader(tokenHeader, measurementType.getOwnerUser());
         measurementTypeRepository.delete(measurementType);

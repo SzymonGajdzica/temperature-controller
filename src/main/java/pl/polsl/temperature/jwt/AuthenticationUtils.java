@@ -46,9 +46,12 @@ public class AuthenticationUtils {
     }
 
     public String getTokenFromHeader(String headerString){
-        if (headerString != null && headerString.startsWith("Bearer "))
+        if(headerString == null)
+            return null;
+        if (headerString.startsWith("Bearer "))
             return headerString.substring(7);
-        return null;
+        else
+            return headerString;
     }
 
     //generate token for user

@@ -30,7 +30,7 @@ public class StationController {
 
     @GetMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public StationView getStation(@PathVariable Long id,
-                                  @RequestHeader("Authorization") String tokenHeader,
+                                  @RequestHeader(value = "Authorization", required = false) String tokenHeader,
                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam ZonedDateTime startDate,
                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam ZonedDateTime endDate) {
         Station station = stationRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
@@ -44,7 +44,7 @@ public class StationController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public StationView addStation(@RequestBody StationPost stationPost, @RequestHeader("Authorization") String tokenHeader) {
+    public StationView addStation(@RequestBody StationPost stationPost, @RequestHeader(value = "Authorization", required = false) String tokenHeader) {
         Station station = new Station();
         Gateway gateway = gatewayRepository.findById(stationPost.getGatewayId()).orElseThrow(() -> new NotFoundException(stationPost.getGatewayId()));
         tokenRepository.validateUserWithHeader(tokenHeader, gateway.getUser());
@@ -54,7 +54,7 @@ public class StationController {
     }
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteStation(@PathVariable Long id, @RequestHeader("Authorization") String tokenHeader) {
+    public void deleteStation(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String tokenHeader) {
         Station station = stationRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
         tokenRepository.validateUserWithHeader(tokenHeader, station.getGateway().getUser());
         stationRepository.delete(station);
